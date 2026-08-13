@@ -48,6 +48,10 @@ class avhsInstance extends InstanceBase {
 				aux2: '',
 				aux3: '',
 				aux4: '',
+				// HS450 source-bus entries (ABST buses 16-18)
+				aux1s: '',
+				pinP1s: '',
+				pinP2s: '',
 			},
 		}
 

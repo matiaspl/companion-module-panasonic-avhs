@@ -41,6 +41,29 @@ module.exports = {
 		{ id: '14', label: 'Aux 3' },
 		{ id: '15', label: 'Aux 4' },
 	],
+
+	// AV-HS450: same bus layout as the AV-HS410 (02=PGM, 03=PVW, ...),
+	// verified live. The HS450 has 32 XPT buttons (XPT1-32 = source ids 00-31),
+	// 20 physical inputs (16 SDI + 2x optional cards with 2 inputs each = source 50-69),
+	// and the internal signals (CBAR, CBGD, Black, FMEM1-4, PGM, PVW, KEYOUT, CLN,
+	// MV1, MV2, ...). FMEM1-4 are the HS450 names for source ids 73-76
+	// (the HS410 spec labels them Still1V/Still2V/Clip1V/Clip2V).
+	HS450_BUS: [
+		{ id: '02', label: 'PGM' },
+		{ id: '03', label: 'PVW' },
+		{ id: '00', label: 'Bus A' },
+		{ id: '01', label: 'Bus B' },
+		{ id: '04', label: 'Key Fill' },
+		{ id: '05', label: 'Key Source' },
+		{ id: '06', label: 'DSK Fill' },
+		{ id: '07', label: 'DSK Source' },
+		{ id: '10', label: 'PinP 1' },
+		{ id: '11', label: 'PinP 2' },
+		{ id: '12', label: 'Aux 1' },
+		{ id: '13', label: 'Aux 2' },
+		{ id: '14', label: 'Aux 3' },
+		{ id: '15', label: 'Aux 4' },
+	],
 	
 	HS50_BUS: [
 		{ id: '02', label: 'PGM' },
@@ -152,9 +175,43 @@ module.exports = {
 		{ id: '93', label: 'Still2K' },
 		{ id: '94', label: 'Clip1K' },
 		{ id: '95', label: 'Clip2K' },
-		{ id: '99', label: 'No selection' },
+	{ id: '99', label: 'No selection' },
 	],
-	
+
+	// AV-HS450: 32 XPT buttons (XPT1-32 = source ids 00-31), 20 physical inputs
+	// (16 SDI + 2x2 optional cards = source 50-69), and internal signals. The HS450 labels
+	// source ids 73-76 as FMEM1-4 (frame memories); the HS410 spec labels them Still1V/
+	// Still2V/Clip1V/Clip2V. MV1/MV2 (source 81/82) are the two multi-view lines (the HS410
+	// spec lists only one MV at 81).
+	HS450_INPUTS: [
+		{ id: '00', label: 'XPT 1' }, { id: '01', label: 'XPT 2' }, { id: '02', label: 'XPT 3' },
+		{ id: '03', label: 'XPT 4' }, { id: '04', label: 'XPT 5' }, { id: '05', label: 'XPT 6' },
+		{ id: '06', label: 'XPT 7' }, { id: '07', label: 'XPT 8' }, { id: '08', label: 'XPT 9' },
+		{ id: '09', label: 'XPT 10' }, { id: '10', label: 'XPT 11' }, { id: '11', label: 'XPT 12' },
+		{ id: '12', label: 'XPT 13' }, { id: '13', label: 'XPT 14' }, { id: '14', label: 'XPT 15' },
+		{ id: '15', label: 'XPT 16' }, { id: '16', label: 'XPT 17' }, { id: '17', label: 'XPT 18' },
+		{ id: '18', label: 'XPT 19' }, { id: '19', label: 'XPT 20' }, { id: '20', label: 'XPT 21' },
+		{ id: '21', label: 'XPT 22' }, { id: '22', label: 'XPT 23' }, { id: '23', label: 'XPT 24' },
+		{ id: '24', label: 'XPT 25' }, { id: '25', label: 'XPT 26' }, { id: '26', label: 'XPT 27' },
+		{ id: '27', label: 'XPT 28' }, { id: '28', label: 'XPT 29' }, { id: '29', label: 'XPT 30' },
+		{ id: '30', label: 'XPT 31' }, { id: '31', label: 'XPT 32' },
+		{ id: '50', label: 'Input 1' }, { id: '51', label: 'Input 2' }, { id: '52', label: 'Input 3' },
+		{ id: '53', label: 'Input 4' }, { id: '54', label: 'Input 5' }, { id: '55', label: 'Input 6' },
+		{ id: '56', label: 'Input 7' }, { id: '57', label: 'Input 8' }, { id: '58', label: 'Input 9' },
+		{ id: '59', label: 'Input 10' }, { id: '60', label: 'Input 11' }, { id: '61', label: 'Input 12' },
+		{ id: '62', label: 'Input 13' }, { id: '63', label: 'Input 14' }, { id: '64', label: 'Input 15' },
+		{ id: '65', label: 'Input 16' }, { id: '66', label: 'Input 17' }, { id: '67', label: 'Input 18' },
+		{ id: '68', label: 'Input 19' }, { id: '69', label: 'Input 20' },
+		{ id: '70', label: 'Color Bar' }, { id: '71', label: 'CBGD' }, { id: '72', label: 'Black' },
+		{ id: '73', label: 'FMEM1' }, { id: '74', label: 'FMEM2' }, { id: '75', label: 'FMEM3' },
+		{ id: '76', label: 'FMEM4' }, { id: '77', label: 'PGM' }, { id: '78', label: 'PVW' },
+		{ id: '79', label: 'KeyOut' }, { id: '80', label: 'CLN' },
+		{ id: '81', label: 'MV1' }, { id: '82', label: 'MV2' },
+		{ id: '91', label: 'M-PVW' }, { id: '92', label: 'Still1K' },
+		{ id: '93', label: 'Still2K' }, { id: '94', label: 'Clip1K' }, { id: '95', label: 'Clip2K' },
+		{ id: '96', label: 'CBGD2' }, { id: '99', label: 'No selection' },
+	],
+
 	HS50_INPUTS: [
 		{ id: '00', label: 'XPT 1' },
 		{ id: '01', label: 'XPT 2' },
@@ -194,6 +251,26 @@ module.exports = {
 	],
 	
 	HS410_TARGETS: [
+		{ id: '00', label: 'BKGD' },
+		{ id: '01', label: 'KEY' },
+		{ id: '04', label: 'PinP 1' },
+		{ id: '05', label: 'PinP 2' },
+		{ id: '06', label: 'FTB' },
+		{ id: '07', label: 'DSK' },
+	],
+
+	// AV-HS450: same transition targets as the AV-HS410.
+	HS450_TARGETS: [
+		{ id: '00', label: 'BKGD' },
+		{ id: '01', label: 'KEY' },
+		{ id: '04', label: 'PinP 1' },
+		{ id: '05', label: 'PinP 2' },
+		{ id: '06', label: 'FTB' },
+		{ id: '07', label: 'DSK' },
+	],
+
+	// AV-HS450: same cut targets as the AV-HS410.
+	HS450_CUTTARGETS: [
 		{ id: '00', label: 'BKGD' },
 		{ id: '01', label: 'KEY' },
 		{ id: '04', label: 'PinP 1' },

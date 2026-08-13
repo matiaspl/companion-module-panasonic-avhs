@@ -24,7 +24,10 @@ module.exports = {
 			if (self.config.host) {
 				let portTCP = 60020;
 
-				if (self.config.model == 'HS410') {
+				if (self.config.model == 'HS450') {
+					portTCP = 60020;
+				}
+				else if (self.config.model == 'HS410') {
 					if (self.config.multicast == true) {
 						portTCP = 60020;
 					}
@@ -48,32 +51,32 @@ module.exports = {
 				});
 		
 				self.socket.on('connect', function () {
-					self.updateStatus(InstanceStatus.Ok);
-	
-					if (self.config.model == 'UHS500') {
-						self.timer = setInterval(function () {
-							self.sendCommand('SPAT:0:00')
-						}, 10000) // 10 sec keepalive command
-					}
-			
-					if (self.config.model == 'HS410') {
-						self.timer = setInterval(function () {
-							self.sendCommand('SPAT:0:00')
-						}, 500) // 500 ms keepalive command
-			
-						//console.log(self.config.multicast)
-						if (self.config.multicast == true) { // only when multicast is enabled in the config
-							try {
-								self.listenMulticast()
-								self.log('info', 'Multicast Tally is enabled')
-							} catch (e) {
-								console.log('Error listening for Multicast Tally', e)
-							}
-						} else { // If not, delete old multicast sockets
-							if (self.multi !== undefined) {
-								self.multi.destroy() // Somehow this is needed even though it's not defined, if you remove it, then Companion will crash when updating the instance, but if you leave it it works and you will only get an error thrown, LOL 🤷
-								delete self.multi
-							}			
+				self.updateStatus(InstanceStatus.Ok);
+
+				if (self.config.model == 'UHS500') {
+					self.timer = setInterval(function () {
+						self.sendCommand('SPAT:0:00')
+					}, 10000) // 10 sec keepalive command
+				}
+
+				if (self.config.model == 'HS450' || self.config.model == 'HS410') {
+					self.timer = setInterval(function () {
+						self.sendCommand('SPAT:0:00')
+					}, 500) // 500 ms keepalive command
+
+					//console.log(self.config.multicast)
+					if (self.config.multicast == true) { // only when multicast is enabled in the config
+						try {
+							self.listenMulticast()
+							self.log('info', 'Multicast Tally is enabled')
+						} catch (e) {
+							console.log('Error listening for Multicast Tally', e)
+						}
+					} else { // If not, delete old multicast sockets
+						if (self.multi !== undefined) {
+							self.multi.destroy() // Somehow this is needed even though it's not defined, if you remove it, then Companion will crash when updating the instance, but if you leave it it works and you will only get an error thrown, LOL 🤷
+							delete self.multi
+						}
 						}
 					}
 				});
@@ -128,47 +131,56 @@ module.exports = {
 			case 'ABST':
 				switch (str[1]) {
 					case '00':
-						tally.busA = self.HS410_INPUTS.find(({ id }) => id === str[2]).label
+						tally.busA = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
 						break // Bus A
 					case '01':
-						tally.busB = self.HS410_INPUTS.find(({ id }) => id === str[2]).label
+						tally.busB = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
 						break // Bus B
 					case '02':
-						tally.pgm = self.HS410_INPUTS.find(({ id }) => id === str[2]).label
+						tally.pgm = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
 						break // PGM
 					case '03':
-						tally.pvw = self.HS410_INPUTS.find(({ id }) => id === str[2]).label
+						tally.pvw = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
 						break // PVW
 					case '04':
-						tally.keyF = self.HS410_INPUTS.find(({ id }) => id === str[2]).label
+						tally.keyF = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
 						break // Key Fill
 					case '05':
-						tally.keyS = self.HS410_INPUTS.find(({ id }) => id === str[2]).label
+						tally.keyS = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
 						break // Key Source
 					case '06':
-						tally.dskF = self.HS410_INPUTS.find(({ id }) => id === str[2]).label
+						tally.dskF = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
 						break // DSK Fill
 					case '07':
-						tally.dskS = self.HS410_INPUTS.find(({ id }) => id === str[2]).label
+						tally.dskS = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
 						break // DSK Source
 					case '10':
-						tally.pinP1 = self.HS410_INPUTS.find(({ id }) => id === str[2]).label
+						tally.pinP1 = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
 						break // PinP 1
 					case '11':
-						tally.pinP2 = self.HS410_INPUTS.find(({ id }) => id === str[2]).label
+						tally.pinP2 = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
 						break // PinP 2
 					case '12':
-						tally.aux1 = self.HS410_INPUTS.find(({ id }) => id === str[2]).label
+						tally.aux1 = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
 						break // AUX 1
 					case '13':
-						tally.aux2 = self.HS410_INPUTS.find(({ id }) => id === str[2]).label
+						tally.aux2 = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
 						break // AUX 2
 					case '14':
-						tally.aux3 = self.HS410_INPUTS.find(({ id }) => id === str[2]).label
+						tally.aux3 = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
 						break // AUX 3
 					case '15':
-						tally.aux4 = self.HS410_INPUTS.find(({ id }) => id === str[2]).label
+						tally.aux4 = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
 						break // AUX 4
+					case '16':
+						tally.aux1s = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
+						break // AUX1 source (HS450)
+					case '17':
+						tally.pinP1s = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
+						break // PinP1 source (HS450)
+					case '18':
+						tally.pinP2s = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
+						break // PinP2 source (HS450)
 					default:
 						break
 				}

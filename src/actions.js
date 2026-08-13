@@ -80,8 +80,8 @@ module.exports = {
 			}
 		};
 
-		actions.time = {
-			name: 'Auto transition time control (HS410)',
+	actions.time = {
+		name: 'Auto transition time control (HS410/HS450)',
 			options: [
 				{
 					label: 'Target',

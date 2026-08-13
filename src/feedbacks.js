@@ -11,8 +11,8 @@ module.exports = {
 		let model = self.config.model
 		let inputs = self[model + '_INPUTS'].slice(0, 24) // Only get the valid range of inputs for tally feedbacks
 
-		// Only avaliable for HS410
-		if (self.config.model == 'HS410') {
+	// Available for HS410 and HS450 (both push tally via multicast)
+	if (self.config.model == 'HS410' || self.config.model == 'HS450') {
 			feedbacks.tally = {
 				type: 'boolean',
 				name: 'Tally Feedback',
