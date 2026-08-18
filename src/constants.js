@@ -183,9 +183,10 @@ module.exports = {
 	// AV-HS450: 32 XPT buttons (XPT1-32 = source ids 00-31), 20 physical inputs
 	// (16 SDI + 2x2 optional cards = source 50-69), and internal signals. The HS450 labels
 	// source ids 73-76 as FMEM1-4 (frame memories); the HS410 spec labels them Still1V/
-	// Still2V/Clip1V/Clip2V. MV1/MV2 (source 81/82) are the two multi-view lines (the HS410
-	// spec lists only one MV at 81). MV1-1..16 / MV2-1..16 (153-184) are the 16 sub-windows
-	// per multi-view line (HS450-specific; the HS410 had no per-pane sources).
+	// Still2V/Clip1V/Clip2V. MV1/MV2 (source 81/82) are the two multi-view outputs
+	// (the HS410 spec lists only one MV at 81). Individual MV panes (UHS500/HS6000
+	// buses 153-184) are not addressable over AUXP_IP: SBUS is SBUS:%02d:%02d
+	// (two-digit bus and source), and VS-R45 has no MV-pane command.
 	HS450_INPUTS: [
 		{ id: '00', label: 'XPT 1' }, { id: '01', label: 'XPT 2' }, { id: '02', label: 'XPT 3' },
 		{ id: '03', label: 'XPT 4' }, { id: '04', label: 'XPT 5' }, { id: '05', label: 'XPT 6' },
@@ -213,18 +214,6 @@ module.exports = {
 		{ id: '91', label: 'M-PVW' }, { id: '92', label: 'Still1K' },
 		{ id: '93', label: 'Still2K' }, { id: '94', label: 'Clip1K' }, { id: '95', label: 'Clip2K' },
 		{ id: '96', label: 'CBGD2' }, { id: '99', label: 'No selection' },
-		{ id: '153', label: 'MV1-1' }, { id: '154', label: 'MV1-2' }, { id: '155', label: 'MV1-3' },
-		{ id: '156', label: 'MV1-4' }, { id: '157', label: 'MV1-5' }, { id: '158', label: 'MV1-6' },
-		{ id: '159', label: 'MV1-7' }, { id: '160', label: 'MV1-8' }, { id: '161', label: 'MV1-9' },
-		{ id: '162', label: 'MV1-10' }, { id: '163', label: 'MV1-11' }, { id: '164', label: 'MV1-12' },
-		{ id: '165', label: 'MV1-13' }, { id: '166', label: 'MV1-14' }, { id: '167', label: 'MV1-15' },
-		{ id: '168', label: 'MV1-16' },
-		{ id: '169', label: 'MV2-1' }, { id: '170', label: 'MV2-2' }, { id: '171', label: 'MV2-3' },
-		{ id: '172', label: 'MV2-4' }, { id: '173', label: 'MV2-5' }, { id: '174', label: 'MV2-6' },
-		{ id: '175', label: 'MV2-7' }, { id: '176', label: 'MV2-8' }, { id: '177', label: 'MV2-9' },
-		{ id: '178', label: 'MV2-10' }, { id: '179', label: 'MV2-11' }, { id: '180', label: 'MV2-12' },
-		{ id: '181', label: 'MV2-13' }, { id: '182', label: 'MV2-14' }, { id: '183', label: 'MV2-15' },
-		{ id: '184', label: 'MV2-16' },
 	],
 
 	HS50_INPUTS: [
