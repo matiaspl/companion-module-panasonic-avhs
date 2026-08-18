@@ -11,12 +11,18 @@ module.exports = {
 		let model = self.config.model
 		let buses = self[model + '_BUS'] || []
 		let inputs = self[model + '_INPUTS'] || []
+		// ABST reports the selected XPT button (00–31 / 99), not the physical
+		// input or internal source. Keep those out of the dropdown.
+		let xptChoices = inputs.filter((i) => /^XPT\s+\d+/i.test(i.label) || i.id === '99')
+		if (xptChoices.length === 0) {
+			xptChoices = inputs
+		}
 
 		feedbacks.tally = {
 			type: 'boolean',
 			name: 'Tally Feedback',
 			description:
-				'True when the selected XPT/source is currently selected on the bus. Requires multicast tally (HS410/HS450); on other models this stays off.',
+				'True when the selected XPT is currently selected on the bus (ABST crosspoint, not the physical input). Requires multicast tally (HS410/HS450); on other models this stays off.',
 			defaultStyle: {
 				color: foregroundColor,
 				bgcolor: backgroundColor,
@@ -30,11 +36,11 @@ module.exports = {
 					default: buses[0] ? buses[0].id : '02',
 				},
 				{
-					label: 'Input',
+					label: 'XPT',
 					type: 'dropdown',
 					id: 'input',
-					choices: inputs,
-					default: inputs[0] ? inputs[0].id : '00',
+					choices: xptChoices,
+					default: xptChoices[0] ? xptChoices[0].id : '00',
 				},
 			],
 			callback: function (feedback) {
