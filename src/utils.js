@@ -121,6 +121,31 @@ module.exports = {
 		}
 	},
 
+	// Resolve an ABST source id against the model input table.
+	// HS450 (and sometimes HS410) omits leading zeros in multicast ABST
+	// frames — e.g. "5" instead of "05" — so match both the raw and a
+	// zero-padded (min 2 digit) form.
+	resolveInputLabel: function (rawId) {
+		let self = this;
+		let inputs = self[self.config.model + '_INPUTS'];
+		if (!inputs || rawId === undefined || rawId === null || rawId === '') {
+			return null;
+		}
+
+		let entry = inputs.find(({ id }) => id === rawId);
+		if (!entry) {
+			let padded = String(rawId).padStart(2, '0');
+			if (padded !== rawId) {
+				entry = inputs.find(({ id }) => id === padded);
+			}
+		}
+		if (!entry) {
+			self.log('debug', `Unknown ABST input id "${rawId}" for model ${self.config.model}`);
+			return String(rawId);
+		}
+		return entry.label;
+	},
+
 	// Store received data
 	storeData: function (str) {
 		let self = this;
@@ -128,63 +153,75 @@ module.exports = {
 
 		// Store Values from Events
 		switch (str[0]) {
-			case 'ABST':
+			case 'ABST': {
+				// ABST:<bus>:<source>[:<tally>]
+				let label = self.resolveInputLabel(str[2]);
+				if (label === null) {
+					break;
+				}
 				switch (str[1]) {
 					case '00':
-						tally.busA = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
+						tally.busA = label;
 						break // Bus A
 					case '01':
-						tally.busB = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
+						tally.busB = label;
 						break // Bus B
 					case '02':
-						tally.pgm = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
+						tally.pgm = label;
 						break // PGM
 					case '03':
-						tally.pvw = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
+						tally.pvw = label;
 						break // PVW
 					case '04':
-						tally.keyF = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
+						tally.keyF = label;
 						break // Key Fill
 					case '05':
-						tally.keyS = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
+						tally.keyS = label;
 						break // Key Source
 					case '06':
-						tally.dskF = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
-						break // DSK Fill
+						tally.dskF = label;
+						break // DSK1 Fill
 					case '07':
-						tally.dskS = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
-						break // DSK Source
+						tally.dskS = label;
+						break // DSK1 Source
+					case '08':
+						tally.dsk2F = label;
+						break // DSK2 Fill (HS450)
+					case '09':
+						tally.dsk2S = label;
+						break // DSK2 Source (HS450)
 					case '10':
-						tally.pinP1 = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
+						tally.pinP1 = label;
 						break // PinP 1
 					case '11':
-						tally.pinP2 = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
+						tally.pinP2 = label;
 						break // PinP 2
 					case '12':
-						tally.aux1 = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
+						tally.aux1 = label;
 						break // AUX 1
 					case '13':
-						tally.aux2 = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
+						tally.aux2 = label;
 						break // AUX 2
 					case '14':
-						tally.aux3 = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
+						tally.aux3 = label;
 						break // AUX 3
 					case '15':
-						tally.aux4 = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
+						tally.aux4 = label;
 						break // AUX 4
 					case '16':
-						tally.aux1s = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
+						tally.aux1s = label;
 						break // AUX1 source (HS450)
 					case '17':
-						tally.pinP1s = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
+						tally.pinP1s = label;
 						break // PinP1 source (HS450)
 					case '18':
-						tally.pinP2s = self[self.config.model + '_INPUTS'].find(({ id }) => id === str[2]).label
+						tally.pinP2s = label;
 						break // PinP2 source (HS450)
 					default:
 						break
 				}
 				break
+			}
 			case 'ATST':
 				break // Store some data when ATST command is recieved
 			case 'SPAT':
@@ -267,9 +304,8 @@ module.exports = {
 					try {
 						self.multi.addMembership(multicastAddress, multicastInterface[i])
 					} catch (error) {
-						// catch errors, as there wil probably be at least some on one or more of your interfaces!
-						self.log('debug', "Multicast Error: Take a look to make sure tally isn't working.");
-						self.debug('debug', error);
+						// Expected on some interfaces; tally still works if one join succeeds.
+						self.log('debug', `Multicast join skipped on ${multicastInterface[i]}: ${error}`)
 					}
 				}
 			})
@@ -280,6 +316,8 @@ module.exports = {
 	// Get All Network Interfaces
 	getNetworkInterfaces: async function () {
 		let self = this
+
+		self.interfaces = []
 
 		let temp = await self.parseVariablesInString('$(internal:all_ip)');
 		let str = temp.split('\\n') // Split interfaces up

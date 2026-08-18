@@ -42,12 +42,12 @@ module.exports = {
 		{ id: '15', label: 'Aux 4' },
 	],
 
-	// AV-HS450: same bus layout as the AV-HS410 (02=PGM, 03=PVW, ...),
-	// verified live. The HS450 has 32 XPT buttons (XPT1-32 = source ids 00-31),
-	// 20 physical inputs (16 SDI + 2x optional cards with 2 inputs each = source 50-69),
-	// and the internal signals (CBAR, CBGD, Black, FMEM1-4, PGM, PVW, KEYOUT, CLN,
-	// MV1, MV2, ...). FMEM1-4 are the HS450 names for source ids 73-76
-	// (the HS410 spec labels them Still1V/Still2V/Clip1V/Clip2V).
+	// AV-HS450: same bus layout as the AV-HS410 for shared buses (02=PGM, 03=PVW, ...),
+	// verified live. Buses 08/09 are unused on the HS410 AUXP_IP spec but are active
+	// on the HS450 as DSK2 Fill/Source (seen populated in live ABST XPT maps).
+	// The HS450 has 32 XPT buttons (XPT1-32 = source ids 00-31), 20 physical inputs
+	// (16 SDI + 2x optional cards with 2 inputs each = source 50-69), and internal
+	// signals (CBAR, CBGD, Black, FMEM1-4, PGM, PVW, KEYOUT, CLN, MV1, MV2, ...).
 	HS450_BUS: [
 		{ id: '02', label: 'PGM' },
 		{ id: '03', label: 'PVW' },
@@ -55,8 +55,10 @@ module.exports = {
 		{ id: '01', label: 'Bus B' },
 		{ id: '04', label: 'Key Fill' },
 		{ id: '05', label: 'Key Source' },
-		{ id: '06', label: 'DSK Fill' },
-		{ id: '07', label: 'DSK Source' },
+		{ id: '06', label: 'DSK1 Fill' },
+		{ id: '07', label: 'DSK1 Source' },
+		{ id: '08', label: 'DSK2 Fill' },
+		{ id: '09', label: 'DSK2 Source' },
 		{ id: '10', label: 'PinP 1' },
 		{ id: '11', label: 'PinP 2' },
 		{ id: '12', label: 'Aux 1' },
@@ -182,7 +184,8 @@ module.exports = {
 	// (16 SDI + 2x2 optional cards = source 50-69), and internal signals. The HS450 labels
 	// source ids 73-76 as FMEM1-4 (frame memories); the HS410 spec labels them Still1V/
 	// Still2V/Clip1V/Clip2V. MV1/MV2 (source 81/82) are the two multi-view lines (the HS410
-	// spec lists only one MV at 81).
+	// spec lists only one MV at 81). MV1-1..16 / MV2-1..16 (153-184) are the 16 sub-windows
+	// per multi-view line (HS450-specific; the HS410 had no per-pane sources).
 	HS450_INPUTS: [
 		{ id: '00', label: 'XPT 1' }, { id: '01', label: 'XPT 2' }, { id: '02', label: 'XPT 3' },
 		{ id: '03', label: 'XPT 4' }, { id: '04', label: 'XPT 5' }, { id: '05', label: 'XPT 6' },
@@ -210,6 +213,18 @@ module.exports = {
 		{ id: '91', label: 'M-PVW' }, { id: '92', label: 'Still1K' },
 		{ id: '93', label: 'Still2K' }, { id: '94', label: 'Clip1K' }, { id: '95', label: 'Clip2K' },
 		{ id: '96', label: 'CBGD2' }, { id: '99', label: 'No selection' },
+		{ id: '153', label: 'MV1-1' }, { id: '154', label: 'MV1-2' }, { id: '155', label: 'MV1-3' },
+		{ id: '156', label: 'MV1-4' }, { id: '157', label: 'MV1-5' }, { id: '158', label: 'MV1-6' },
+		{ id: '159', label: 'MV1-7' }, { id: '160', label: 'MV1-8' }, { id: '161', label: 'MV1-9' },
+		{ id: '162', label: 'MV1-10' }, { id: '163', label: 'MV1-11' }, { id: '164', label: 'MV1-12' },
+		{ id: '165', label: 'MV1-13' }, { id: '166', label: 'MV1-14' }, { id: '167', label: 'MV1-15' },
+		{ id: '168', label: 'MV1-16' },
+		{ id: '169', label: 'MV2-1' }, { id: '170', label: 'MV2-2' }, { id: '171', label: 'MV2-3' },
+		{ id: '172', label: 'MV2-4' }, { id: '173', label: 'MV2-5' }, { id: '174', label: 'MV2-6' },
+		{ id: '175', label: 'MV2-7' }, { id: '176', label: 'MV2-8' }, { id: '177', label: 'MV2-9' },
+		{ id: '178', label: 'MV2-10' }, { id: '179', label: 'MV2-11' }, { id: '180', label: 'MV2-12' },
+		{ id: '181', label: 'MV2-13' }, { id: '182', label: 'MV2-14' }, { id: '183', label: 'MV2-15' },
+		{ id: '184', label: 'MV2-16' },
 	],
 
 	HS50_INPUTS: [
@@ -259,24 +274,27 @@ module.exports = {
 		{ id: '07', label: 'DSK' },
 	],
 
-	// AV-HS450: same transition targets as the AV-HS410.
+	// AV-HS450: HS410 targets plus DSK2. Target 07 is DSK1 (same id the stock
+	// module uses for the single HS410 DSK); 08 is DSK2 (matches UHS500 DSK2
+	// numbering and the second DSK on the HS450 panel).
 	HS450_TARGETS: [
 		{ id: '00', label: 'BKGD' },
 		{ id: '01', label: 'KEY' },
 		{ id: '04', label: 'PinP 1' },
 		{ id: '05', label: 'PinP 2' },
 		{ id: '06', label: 'FTB' },
-		{ id: '07', label: 'DSK' },
+		{ id: '07', label: 'DSK 1' },
+		{ id: '08', label: 'DSK 2' },
 	],
 
-	// AV-HS450: same cut targets as the AV-HS410.
 	HS450_CUTTARGETS: [
 		{ id: '00', label: 'BKGD' },
 		{ id: '01', label: 'KEY' },
 		{ id: '04', label: 'PinP 1' },
 		{ id: '05', label: 'PinP 2' },
 		{ id: '06', label: 'FTB' },
-		{ id: '07', label: 'DSK' },
+		{ id: '07', label: 'DSK 1' },
+		{ id: '08', label: 'DSK 2' },
 	],
 	
 	HS50_TARGETS: [

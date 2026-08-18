@@ -42,6 +42,8 @@ class avhsInstance extends InstanceBase {
 				keyS: '',
 				dskF: '',
 				dskS: '',
+				dsk2F: '',
+				dsk2S: '',
 				pinP1: '',
 				pinP2: '',
 				aux1: '',
@@ -86,14 +88,12 @@ class avhsInstance extends InstanceBase {
 		await this.getNetworkInterfaces();
 
 		this.initActions();
+		this.initFeedbacks();
+		this.initVariables();
+		this.initPresets();
 
-		if (this.config.multicast == true) {
-			this.initFeedbacks()
-			this.initVariables()
-			
-			this.checkFeedbacks()
-			this.checkVariables()
-		}
+		this.checkFeedbacks();
+		this.checkVariables();
 
 		this.initConnection();
 	}

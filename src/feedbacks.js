@@ -9,120 +9,94 @@ module.exports = {
 		const backgroundColor = combineRgb(255, 0, 0) // Red
 
 		let model = self.config.model
-		let inputs = self[model + '_INPUTS'].slice(0, 24) // Only get the valid range of inputs for tally feedbacks
+		let buses = self[model + '_BUS'] || []
+		let inputs = self[model + '_INPUTS'] || []
 
-	// Available for HS410 and HS450 (both push tally via multicast)
-	if (self.config.model == 'HS410' || self.config.model == 'HS450') {
-			feedbacks.tally = {
-				type: 'boolean',
-				name: 'Tally Feedback',
-				description: 'Indicate if Camera is selected on a bus',
-				defaultStyle: {
-					color: foregroundColor,
-					bgcolor: backgroundColor,
+		feedbacks.tally = {
+			type: 'boolean',
+			name: 'Tally Feedback',
+			description:
+				'True when the selected XPT/source is currently selected on the bus. Requires multicast tally (HS410/HS450); on other models this stays off.',
+			defaultStyle: {
+				color: foregroundColor,
+				bgcolor: backgroundColor,
+			},
+			options: [
+				{
+					label: 'BUS',
+					type: 'dropdown',
+					id: 'bus',
+					choices: buses,
+					default: buses[0] ? buses[0].id : '02',
 				},
-				options: [
-					{
-						label: 'BUS',
-						type: 'dropdown',
-						id: 'bus',
-						choices: self[model + '_BUS'],
-						default: self[model + '_BUS'][0].id,
-					},
-					{
-						label: 'Input',
-						type: 'dropdown',
-						id: 'input',
-						choices: inputs,
-						default: inputs[0].id,
-					},
-				],
-				callback: function (feedback, bank) {
-					let opt = feedback.options
-					let tally = self.data.tally
+				{
+					label: 'Input',
+					type: 'dropdown',
+					id: 'input',
+					choices: inputs,
+					default: inputs[0] ? inputs[0].id : '00',
+				},
+			],
+			callback: function (feedback) {
+				let opt = feedback.options
+				let tally = self.data.tally
+				let inputsList = self[self.config.model + '_INPUTS'] || []
 
-					let input = self.HS410_INPUTS.find(({ id }) => id === opt.input).label
-
-					// Only avaliable with HS410
-					switch (opt.bus) {
-						case '00':
-							if (input == tally.busA) {
-								return true
-							}
-							break // Bus A
-						case '01':
-							if (input == tally.busB) {
-								return true
-							}
-							break // Bus B
-						case '02':
-							if (input == tally.pgm) {
-								return true
-							}
-							break // PGM
-						case '03':
-							if (input == tally.pvw) {
-								return true
-							}
-							break // PVW
-						case '04':
-							if (input == tally.keyF) {
-								return true
-							}
-							break // Key Fill
-						case '05':
-							if (input == tally.keyS) {
-								return true
-							}
-							break // Key Source
-						case '06':
-							if (input == tally.dskF) {
-								return true
-							}
-							break // DSK Fill
-						case '07':
-							if (input == tally.dskS) {
-								return true
-							}
-							break // DSK Source
-						case '10':
-							if (input == tally.pinP1) {
-								return true
-							}
-							break // PinP 1
-						case '11':
-							if (input == tally.pinP2) {
-								return true
-							}
-							break // PinP 2
-						case '12':
-							if (input == tally.aux1) {
-								return true
-							}
-							break // AUX 1
-						case '13':
-							if (input == tally.aux2) {
-								return true
-							}
-							break // AUX 2
-						case '14':
-							if (input == tally.aux3) {
-								return true
-							}
-							break // AUX 3
-						case '15':
-							if (input == tally.aux4) {
-								return true
-							}
-							break // AUX 4
-						default:
-							return false
-					}
+				let inputEntry = inputsList.find(({ id }) => id === opt.input)
+				if (!inputEntry) {
+					let padded = String(opt.input || '').padStart(2, '0')
+					inputEntry = inputsList.find(({ id }) => id === padded)
+				}
+				if (!inputEntry) {
 					return false
-				},
-			}
+				}
+				let input = inputEntry.label
+
+				switch (opt.bus) {
+					case '00':
+						return input == tally.busA
+					case '01':
+						return input == tally.busB
+					case '02':
+						return input == tally.pgm
+					case '03':
+						return input == tally.pvw
+					case '04':
+						return input == tally.keyF
+					case '05':
+						return input == tally.keyS
+					case '06':
+						return input == tally.dskF
+					case '07':
+						return input == tally.dskS
+					case '08':
+						return input == tally.dsk2F
+					case '09':
+						return input == tally.dsk2S
+					case '10':
+						return input == tally.pinP1
+					case '11':
+						return input == tally.pinP2
+					case '12':
+						return input == tally.aux1
+					case '13':
+						return input == tally.aux2
+					case '14':
+						return input == tally.aux3
+					case '15':
+						return input == tally.aux4
+					case '16':
+						return input == tally.aux1s
+					case '17':
+						return input == tally.pinP1s
+					case '18':
+						return input == tally.pinP2s
+					default:
+						return false
+				}
+			},
 		}
 
-		self.setFeedbackDefinitions(feedbacks);
-	}
+		self.setFeedbackDefinitions(feedbacks)
+	},
 }
