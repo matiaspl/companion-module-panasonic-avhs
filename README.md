@@ -21,5 +21,5 @@ See HELP.md and LICENSE
   (`self[model + '_INPUTS']`) so the HS450's 32-XPT range is resolved correctly (the HS410 only has 24 XPT).
 - Added the HS450 source-bus entries (ABST buses 16-18: `aux1s`, `pinP1s`, `pinP2s`) to the tally data struct and the `storeData` ABST handler.
 - 500ms keepalive polling enabled for the HS450 (same as the HS410).
-- `actions.time` (auto transition time control) and tally feedbacks enabled for the HS450.
+- Tally feedbacks enabled for the HS450. Auto transition *time* (`STIM`) is HS410_IF-only and is not offered for HS450 (set rates on the mixer; VS-R45/AUXP_IP has no STIM).
 - manifest `products` and `description` updated to include the AV-HS450.

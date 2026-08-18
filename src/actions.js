@@ -82,35 +82,32 @@ module.exports = {
 			}
 		};
 
-	actions.time = {
-		name: 'Auto transition time control (HS410/HS450)',
-			options: [
-				{
-					label: 'Target',
-					type: 'dropdown',
-					id: 'target',
-					choices: self[model + '_TARGETS'],
-					default: self[model + '_TARGETS'][0].id,
-				},
-				{
-					label: 'Time (in number of frames)',
-					type: 'textinput',
-					id: 'frames',
-					regex: '/^0*([0-9]|[1-8][0-9]|9[0-9]|[1-8][0-9]{2}|9[0-8][0-9]|99[0-9])$/',
-				},
-			],
-			callback: async function (action) {
-				if (self.config.model == 'HS50') {
-					self.log('error', 'HS50 does not have support for setting auto transition times');
-					return;
+		if (model != 'HS50' && model != 'HS450') {
+			actions.time = {
+				name: 'Auto transition time control (HS410/UHS500)',
+				options: [
+					{
+						label: 'Target',
+						type: 'dropdown',
+						id: 'target',
+						choices: self[model + '_TARGETS'],
+						default: self[model + '_TARGETS'][0].id,
+					},
+					{
+						label: 'Time (in number of frames)',
+						type: 'textinput',
+						id: 'frames',
+						regex: '/^0*([0-9]|[1-8][0-9]|9[0-9]|[1-8][0-9]{2}|9[0-8][0-9]|99[0-9])$/',
+					},
+				],
+				callback: async function (action) {
+					if (parseInt(action.options.frames) > 999) {
+						action.options.frames = 999;
+					}
+					self.sendCommand('STIM:' + action.options.target + ':' + ('000' + parseInt(action.options.frames)).substr(-3));
 				}
-
-				if (parseInt(action.options.frames) > 999) {
-					action.options.frames = 999;
-				}
-				self.sendCommand('STIM:' + action.options.target + ':' + ('000' + parseInt(action.options.frames)).substr(-3));
-			}
-		};
+			};
+		}
 
 		self.setActionDefinitions(actions);
 	}
