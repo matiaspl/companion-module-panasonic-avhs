@@ -274,27 +274,25 @@ module.exports = {
 		{ id: '07', label: 'DSK' },
 	],
 
-	// AV-HS450: HS410 targets plus DSK2. Target 07 is DSK1 (same id the stock
-	// module uses for the single HS410 DSK); 08 is DSK2 (matches UHS500 DSK2
-	// numbering and the second DSK on the HS450 panel).
+	// AV-HS450 uses AUXP_IP on TCP 60020 (not HS410_IF on 60040). AUXP_IP
+	// SAUT targets are: 00=BKGD, 01=KEY, 02=DSK1, 03=DSK2 (unused on HS410),
+	// 04=PinP1, 05=PinP2, 06=FTB. The stock module's 07=DSK id is HS410_IF
+	// only. SCUT is only implemented for BKGD/KEY on the HS450 (confirmed
+	// live); DSK/PinP/FTB have AUTO only — there is no cut command in AUXP_IP
+	// or the VS-R45 firmware (SAUT:%02d:%d, no SCUT/STIM).
 	HS450_TARGETS: [
 		{ id: '00', label: 'BKGD' },
 		{ id: '01', label: 'KEY' },
+		{ id: '02', label: 'DSK 1' },
+		{ id: '03', label: 'DSK 2' },
 		{ id: '04', label: 'PinP 1' },
 		{ id: '05', label: 'PinP 2' },
 		{ id: '06', label: 'FTB' },
-		{ id: '07', label: 'DSK 1' },
-		{ id: '08', label: 'DSK 2' },
 	],
 
 	HS450_CUTTARGETS: [
 		{ id: '00', label: 'BKGD' },
 		{ id: '01', label: 'KEY' },
-		{ id: '04', label: 'PinP 1' },
-		{ id: '05', label: 'PinP 2' },
-		{ id: '06', label: 'FTB' },
-		{ id: '07', label: 'DSK 1' },
-		{ id: '08', label: 'DSK 2' },
 	],
 	
 	HS50_TARGETS: [

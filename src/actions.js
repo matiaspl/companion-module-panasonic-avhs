@@ -40,7 +40,9 @@ module.exports = {
 				},
 			],
 			callback: async function (action) {
-				if (self.config.model == 'HS50') {
+				// VS-R45 / AUXP_IP (HS450) and HS50 use SAUT:<target>:<op> (2 fields).
+				// HS410_IF / UHS500 use SAUT:<target>:<effect>:<op> (3 fields).
+				if (self.config.model == 'HS50' || self.config.model == 'HS450') {
 					self.sendCommand('SAUT:' + action.options.target + ':0');
 				} else {
 					self.sendCommand('SAUT:' + action.options.target + ':0:0');
