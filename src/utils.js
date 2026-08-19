@@ -223,7 +223,10 @@ module.exports = {
 				break
 			}
 			case 'ATST':
-				break // Store some data when ATST command is recieved
+				if (str.length >= 3) {
+					tally.autoTrans[str[1]] = str[2]
+				}
+				break
 			case 'SPAT':
 				break // Store some data when SPAT command is recieved
 

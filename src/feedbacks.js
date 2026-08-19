@@ -103,6 +103,55 @@ module.exports = {
 			},
 		}
 
+		if (self.config.model == 'HS410' || self.config.model == 'HS450') {
+			feedbacks.auto_status = {
+				type: 'boolean',
+				name: 'Auto Transition Status',
+				description:
+					'True when an ATST target matches the selected auto-transition state (00=stop, 01=pause, 02=running)',
+				defaultStyle: {
+					color: combineRgb(255, 255, 255),
+					bgcolor: combineRgb(0, 180, 0),
+				},
+				options: [
+					{
+						label: 'Target',
+						type: 'dropdown',
+						id: 'target',
+						choices: self.ATST_TARGETS,
+						default: '0',
+					},
+					{
+						label: 'State',
+						type: 'dropdown',
+						id: 'state',
+						choices: self.ATST_STATES,
+						default: '02',
+					},
+				],
+				callback: function (feedback) {
+					const auto = self.data.tally.autoTrans || {}
+					const current = auto[feedback.options.target]
+					return current === feedback.options.state
+				},
+			}
+
+			feedbacks.auto_running = {
+				type: 'boolean',
+				name: 'Auto Transition Running',
+				description: 'True when any ATST target reports state 02 (transition running)',
+				defaultStyle: {
+					color: combineRgb(255, 255, 255),
+					bgcolor: combineRgb(255, 140, 0),
+				},
+				options: [],
+				callback: function () {
+					const auto = self.data.tally.autoTrans || {}
+					return Object.values(auto).some((code) => code === '02')
+				},
+			}
+		}
+
 		self.setFeedbackDefinitions(feedbacks)
 	},
 }

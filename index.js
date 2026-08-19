@@ -54,6 +54,8 @@ class avhsInstance extends InstanceBase {
 				aux1s: '',
 				pinP1s: '',
 				pinP2s: '',
+				// ATST:<target>:<state> auto-transition status (00=stop, 01=pause, 02=running)
+				autoTrans: {},
 			},
 		}
 

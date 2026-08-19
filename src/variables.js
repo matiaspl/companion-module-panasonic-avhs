@@ -20,6 +20,13 @@ module.exports = {
 		variables.push({ variableId: 'aux_3', name: 'AUX 3 Selected' })
 		variables.push({ variableId: 'aux_4', name: 'AUX 4 Selected' })
 
+		if (self.config.model == 'HS410' || self.config.model == 'HS450') {
+			variables.push({ variableId: 'auto_bkgd', name: 'Auto Status: BKGD' })
+			variables.push({ variableId: 'auto_key', name: 'Auto Status: KEY' })
+			variables.push({ variableId: 'auto_aux', name: 'Auto Status: AUX' })
+			variables.push({ variableId: 'auto_any_running', name: 'Any Auto Transition Running' })
+		}
+
 		self.setVariableDefinitions(variables);
 	},
 
@@ -45,6 +52,20 @@ module.exports = {
 		variableObj['aux_2'] = self.data.tally.aux2;
 		variableObj['aux_3'] = self.data.tally.aux3;
 		variableObj['aux_4'] = self.data.tally.aux4;
+
+		if (self.config.model == 'HS410' || self.config.model == 'HS450') {
+			const auto = self.data.tally.autoTrans || {}
+			const label = (id) => {
+				const code = auto[id]
+				if (!code) return ''
+				const state = self.ATST_STATES.find(({ id }) => id === code)
+				return state ? state.label : code
+			}
+			variableObj['auto_bkgd'] = label('0')
+			variableObj['auto_key'] = label('1')
+			variableObj['auto_aux'] = label('7')
+			variableObj['auto_any_running'] = Object.values(auto).some((code) => code === '02') ? 'yes' : 'no'
+		}
 
 		self.setVariableValues(variableObj);
 	}

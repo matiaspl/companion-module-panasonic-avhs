@@ -283,6 +283,28 @@ module.exports = {
 		{ id: '00', label: 'BKGD' },
 		{ id: '01', label: 'KEY' },
 	],
+
+	// ATST parameter-2 values (AUXP_IP auto-transition status).
+	ATST_STATES: [
+		{ id: '00', label: 'Stop' },
+		{ id: '01', label: 'Pause (BKGD only)' },
+		{ id: '02', label: 'Running' },
+	],
+
+	// ATST parameter-1 targets (AUXP_IP). HS410/HS450 share the 0..7 slots
+	// observed on multicast (0=BKGD, 7=AUX); 8/9 are PinP buses on HS410 spec.
+	ATST_TARGETS: [
+		{ id: '0', label: 'BKGD' },
+		{ id: '1', label: 'KEY' },
+		{ id: '2', label: 'DSK' },
+		{ id: '3', label: 'DSK 2' },
+		{ id: '4', label: 'PinP 1' },
+		{ id: '5', label: 'PinP 2' },
+		{ id: '6', label: 'FTB' },
+		{ id: '7', label: 'AUX' },
+		{ id: '8', label: 'PinP 1 Bus' },
+		{ id: '9', label: 'PinP 2 Bus' },
+	],
 	
 	HS50_TARGETS: [
 		{ id: '00', label: 'BKGD' },
