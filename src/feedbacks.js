@@ -17,6 +17,18 @@ module.exports = {
 		if (xptChoices.length === 0) {
 			xptChoices = inputs
 		}
+		// ATLY is a physical-input bitmap (IN1…), not XPT buttons.
+		let physicalInputs = inputs.filter((i) => /^Input\s+\d+/i.test(i.label))
+		if (physicalInputs.length === 0) {
+			physicalInputs = inputs.filter((i) => {
+				let n = parseInt(i.id, 10)
+				return n >= 50 && n <= 69
+			})
+		}
+		const atlyBuses = [
+			{ id: '02', label: 'PGM' },
+			{ id: '03', label: 'PVW' },
+		]
 
 		feedbacks.tally = {
 			type: 'boolean',
@@ -104,11 +116,50 @@ module.exports = {
 		}
 
 		if (self.config.model == 'HS410' || self.config.model == 'HS450') {
+			const runningStates = self.ATST_RUNNING_STATES || ['02', '04', '06']
+
+			feedbacks.atly_tally = {
+				type: 'boolean',
+				name: 'ATLY Input Tally (PGM/PVW)',
+				description:
+					'True when ATLY reports the selected physical input on PGM (red) or PVW (green). Bit0=Input 1 … — independent of XPT button mapping. Requires multicast.',
+				defaultStyle: {
+					color: foregroundColor,
+					bgcolor: backgroundColor,
+				},
+				options: [
+					{
+						label: 'BUS',
+						type: 'dropdown',
+						id: 'bus',
+						choices: atlyBuses,
+						default: '02',
+					},
+					{
+						label: 'Input',
+						type: 'dropdown',
+						id: 'input',
+						choices: physicalInputs,
+						default: physicalInputs[0] ? physicalInputs[0].id : '50',
+					},
+				],
+				callback: function (feedback) {
+					const opt = feedback.options
+					const src = parseInt(opt.input, 10)
+					if (!Number.isFinite(src) || src < 50 || src > 69) {
+						return false
+					}
+					const bit = src - 50
+					const mask = opt.bus === '03' ? self.data.tally.atlyPvw : self.data.tally.atlyPgm
+					return ((mask >>> 0) & (1 << bit)) !== 0
+				},
+			}
+
 			feedbacks.auto_status = {
 				type: 'boolean',
 				name: 'Auto Transition Status',
 				description:
-					'True when an ATST target matches the selected auto-transition state (00=stop, 01=pause, 02=running)',
+					'True when an ATST target matches the selected state (00=off, 01=pause, 02=BKGD running, 04=on-ramp, 05=on, 06=off-ramp)',
 				defaultStyle: {
 					color: combineRgb(255, 255, 255),
 					bgcolor: combineRgb(0, 180, 0),
@@ -126,7 +177,7 @@ module.exports = {
 						type: 'dropdown',
 						id: 'state',
 						choices: self.ATST_STATES,
-						default: '02',
+						default: '05',
 					},
 				],
 				callback: function (feedback) {
@@ -139,7 +190,8 @@ module.exports = {
 			feedbacks.auto_running = {
 				type: 'boolean',
 				name: 'Auto Transition Running',
-				description: 'True when any ATST target reports state 02 (transition running)',
+				description:
+					'True when any ATST target is transitioning (02 BKGD, or 04/06 for KEY/DSK/PinP/FTB)',
 				defaultStyle: {
 					color: combineRgb(255, 255, 255),
 					bgcolor: combineRgb(255, 140, 0),
@@ -147,7 +199,55 @@ module.exports = {
 				options: [],
 				callback: function () {
 					const auto = self.data.tally.autoTrans || {}
-					return Object.values(auto).some((code) => code === '02')
+					return Object.values(auto).some((code) => runningStates.includes(code))
+				},
+			}
+
+			feedbacks.auto_target_running = {
+				type: 'boolean',
+				name: 'Auto Transition Running (Target)',
+				description:
+					'True when the selected ATST target is transitioning (02/04/06)',
+				defaultStyle: {
+					color: combineRgb(255, 255, 255),
+					bgcolor: combineRgb(255, 140, 0),
+				},
+				options: [
+					{
+						label: 'Target',
+						type: 'dropdown',
+						id: 'target',
+						choices: self.ATST_TARGETS,
+						default: '0',
+					},
+				],
+				callback: function (feedback) {
+					const auto = self.data.tally.autoTrans || {}
+					const current = auto[feedback.options.target]
+					return runningStates.includes(current)
+				},
+			}
+
+			feedbacks.auto_target_on = {
+				type: 'boolean',
+				name: 'Auto Effect On (Target)',
+				description: 'True when the selected ATST target reports state 05 (on)',
+				defaultStyle: {
+					color: combineRgb(255, 255, 255),
+					bgcolor: combineRgb(0, 180, 0),
+				},
+				options: [
+					{
+						label: 'Target',
+						type: 'dropdown',
+						id: 'target',
+						choices: self.ATST_TARGETS,
+						default: '1',
+					},
+				],
+				callback: function (feedback) {
+					const auto = self.data.tally.autoTrans || {}
+					return auto[feedback.options.target] === '05'
 				},
 			}
 		}

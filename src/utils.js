@@ -227,6 +227,17 @@ module.exports = {
 					tally.autoTrans[str[1]] = str[2]
 				}
 				break
+			case 'ATLY':
+				// ATLY:<pvw_hex>:<pgm_hex> — physical IN tally bitmasks.
+				// bit0 = Input 1 (source 50), bit1 = Input 2, … (confirmed live for PGM;
+				// PVW field matches earlier HS450 captures / AUXP_IP layout).
+				if (str.length >= 3) {
+					const pvw = parseInt(str[1], 16)
+					const pgm = parseInt(str[2], 16)
+					tally.atlyPvw = Number.isFinite(pvw) ? pvw >>> 0 : 0
+					tally.atlyPgm = Number.isFinite(pgm) ? pgm >>> 0 : 0
+				}
+				break
 			case 'SPAT':
 				break // Store some data when SPAT command is recieved
 

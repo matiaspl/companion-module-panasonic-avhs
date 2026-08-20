@@ -54,8 +54,11 @@ class avhsInstance extends InstanceBase {
 				aux1s: '',
 				pinP1s: '',
 				pinP2s: '',
-				// ATST:<target>:<state> auto-transition status (00=stop, 01=pause, 02=running)
+				// ATST:<target>:<state> — 00 off, 01 pause, 02 BKGD run, 04/05/06 on-ramp/on/off-ramp
 				autoTrans: {},
+				// ATLY:<pvw_hex>:<pgm_hex> physical-input bitmasks (bit0=IN1 … bit19=IN20)
+				atlyPvw: 0,
+				atlyPgm: 0,
 			},
 		}
 

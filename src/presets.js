@@ -112,6 +112,29 @@ module.exports = {
 		}
 
 		for (let target of targets) {
+			// SAUT ids are zero-padded ("02"); ATST wire/target ids are not ("2").
+			const atstTarget = String(parseInt(target.id, 10))
+			const autoFeedbacks = []
+			if (self.config.model == 'HS410' || self.config.model == 'HS450') {
+				autoFeedbacks.push(
+					{
+						feedbackId: 'auto_target_on',
+						options: { target: atstTarget },
+						style: {
+							color: fgWhite,
+							bgcolor: tallyGreen,
+						},
+					},
+					{
+						feedbackId: 'auto_target_running',
+						options: { target: atstTarget },
+						style: {
+							color: fgWhite,
+							bgcolor: bgOrange,
+						},
+					}
+				)
+			}
 			presets[`auto_${target.id}`] = {
 				type: 'button',
 				category: 'Transitions',
@@ -135,7 +158,7 @@ module.exports = {
 						up: [],
 					},
 				],
-				feedbacks: [],
+				feedbacks: autoFeedbacks,
 			}
 		}
 

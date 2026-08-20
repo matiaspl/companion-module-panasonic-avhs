@@ -284,19 +284,28 @@ module.exports = {
 		{ id: '01', label: 'KEY' },
 	],
 
-	// ATST parameter-2 values (AUXP_IP auto-transition status).
+	// ATST parameter-2 values. AUXP_IP documents 00/01/02; HS450 also emits
+	// 04/05/06 for KEY/DSK/PinP/FTB (confirmed live):
+	//   00=off/stop, 01=pause (BKGD), 02=BKGD running,
+	//   04=transitioning on, 05=on (steady), 06=transitioning off.
 	ATST_STATES: [
-		{ id: '00', label: 'Stop' },
+		{ id: '00', label: 'Off / Stop' },
 		{ id: '01', label: 'Pause (BKGD only)' },
-		{ id: '02', label: 'Running' },
+		{ id: '02', label: 'Running (BKGD)' },
+		{ id: '04', label: 'Transitioning On' },
+		{ id: '05', label: 'On' },
+		{ id: '06', label: 'Transitioning Off' },
 	],
 
-	// ATST parameter-1 targets (AUXP_IP). HS410/HS450 share the 0..7 slots
-	// observed on multicast (0=BKGD, 7=AUX); 8/9 are PinP buses on HS410 spec.
+	// States that mean an auto transition is in progress (not steady on/off).
+	ATST_RUNNING_STATES: ['02', '04', '06'],
+
+	// ATST parameter-1 targets. HS450 uses SAUT ids on the wire (0=BKGD … 6=FTB,
+	// 7=AUX); 8/9 are PinP buses on the HS410 AUXP_IP table.
 	ATST_TARGETS: [
 		{ id: '0', label: 'BKGD' },
 		{ id: '1', label: 'KEY' },
-		{ id: '2', label: 'DSK' },
+		{ id: '2', label: 'DSK 1' },
 		{ id: '3', label: 'DSK 2' },
 		{ id: '4', label: 'PinP 1' },
 		{ id: '5', label: 'PinP 2' },
