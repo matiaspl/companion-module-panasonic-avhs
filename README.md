@@ -22,4 +22,6 @@ See [HELP.md](./companion/HELP.md) and [LICENSE](./LICENSE)
 - Added the HS450 source-bus entries (ABST buses 16-18: `aux1s`, `pinP1s`, `pinP2s`) to the tally data struct and the `storeData` ABST handler.
 - 500ms keepalive polling enabled for the HS450 (same as the HS410).
 - Tally feedbacks enabled for the HS450. Auto transition *time* (`STIM`) is HS410_IF-only and is not offered for HS450 (set rates on the mixer; VS-R45/AUXP_IP has no STIM).
+- ATST auto-transition feedback (including DSK/PinP/FTB on/off) and ATLY physical-input PGM/PVW tally.
+- HS410 + multicast uses AUXP_IP SAUT (2-field; DSK=`02`) so PinP/DSK AUTO keep working with tally enabled ([#7](https://github.com/bitfocus/companion-module-panasonic-avhs/issues/7), [#14](https://github.com/bitfocus/companion-module-panasonic-avhs/issues/14)).
 - manifest `products` and `description` updated to include the AV-HS450.
