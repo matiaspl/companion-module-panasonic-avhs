@@ -120,7 +120,7 @@ module.exports = {
 
 			feedbacks.atly_tally = {
 				type: 'boolean',
-				name: 'ATLY Input Tally (PGM/PVW)',
+				name: 'Input Tally Feedback (PGM/PVW-only)',
 				description:
 					'True when ATLY reports the selected physical input on PGM (red) or PVW (green). Bit0=Input 1 … — independent of XPT button mapping. Requires multicast.',
 				defaultStyle: {
