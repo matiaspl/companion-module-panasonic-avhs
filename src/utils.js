@@ -339,5 +339,25 @@ module.exports = {
 		for (let i = 0; i < str.length - 1; i++) {
 			self.interfaces.push(str[i])
 		}
-	}
+	},
+
+	// AUXP_IP Vol.2 SAUT is 2-field (SAUT:00:0). HS410 uses that when multicast
+	// is enabled (TCP 60020); otherwise HS410_IF 3-field SAUT on 60040.
+	usesAuxpIpSaut: function () {
+		let self = this
+		return (
+			self.config.model == 'HS50' ||
+			self.config.model == 'HS450' ||
+			(self.config.model == 'HS410' && self.config.multicast == true)
+		)
+	},
+
+	getSautTargets: function () {
+		let self = this
+		let model = self.config.model
+		if (model == 'HS410' && self.config.multicast == true) {
+			return self.HS410_AUXP_TARGETS
+		}
+		return self[model + '_TARGETS'] || []
+	},
 }

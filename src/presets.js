@@ -19,7 +19,7 @@ module.exports = {
 		let model = self.config.model
 		let buses = self[model + '_BUS'] || []
 		let inputs = self[model + '_INPUTS'] || []
-		let targets = self[model + '_TARGETS'] || []
+		let targets = self.getSautTargets()
 		let cutTargets = self[model + '_CUTTARGETS'] || self[model + '_TARGETS'] || []
 
 		const busStyle = {

@@ -4,6 +4,7 @@ module.exports = {
 		let actions = {};
 
 		let model = self.config.model;
+		let sautTargets = self.getSautTargets()
 
 		actions.xpt = {
 			name: 'Bus crosspoint control',
@@ -35,14 +36,15 @@ module.exports = {
 					label: 'Target',
 					type: 'dropdown',
 					id: 'target',
-					choices: self[model + '_TARGETS'],
-					default: self[model + '_TARGETS'][0].id,
+					choices: sautTargets,
+					default: sautTargets[0].id,
 				},
 			],
 			callback: async function (action) {
-				// VS-R45 / AUXP_IP (HS450) and HS50 use SAUT:<target>:<op> (2 fields).
-				// HS410_IF / UHS500 use SAUT:<target>:<effect>:<op> (3 fields).
-				if (self.config.model == 'HS50' || self.config.model == 'HS450') {
+				// AUXP_IP (HS450, HS410+multicast) and HS50: SAUT:<target>:<op> (2 fields).
+				// Example from AUXP_IP Vol.2: SAUT:00:0 — DSK is target 02.
+				// HS410_IF / UHS500: SAUT:<target>:<effect>:<op> (3 fields); DSK is 07.
+				if (self.usesAuxpIpSaut()) {
 					self.sendCommand('SAUT:' + action.options.target + ':0');
 				} else {
 					self.sendCommand('SAUT:' + action.options.target + ':0:0');
@@ -57,12 +59,16 @@ module.exports = {
 					label: 'Target',
 					type: 'dropdown',
 					id: 'target',
-					choices: self[model + '_TARGETS'],
-					default: self[model + '_TARGETS'][0].id,
+					choices: sautTargets,
+					default: sautTargets[0].id,
 				},
 			],
 			callback: async function (action) {
-				self.sendCommand('SAUT:' + action.options.target + ':0');
+				if (self.usesAuxpIpSaut()) {
+					self.sendCommand('SAUT:' + action.options.target + ':0');
+				} else {
+					self.sendCommand('SAUT:' + action.options.target + ':0:0');
+				}
 			}
 		};
 
@@ -83,6 +89,8 @@ module.exports = {
 		};
 
 		if (model != 'HS50' && model != 'HS450') {
+			// STIM is HS410_IF / UHS500 only (not in AUXP_IP).
+			let stimTargets = self[model + '_TARGETS']
 			actions.time = {
 				name: 'Auto transition time control (HS410/UHS500)',
 				options: [
@@ -90,8 +98,8 @@ module.exports = {
 						label: 'Target',
 						type: 'dropdown',
 						id: 'target',
-						choices: self[model + '_TARGETS'],
-						default: self[model + '_TARGETS'][0].id,
+						choices: stimTargets,
+						default: stimTargets[0].id,
 					},
 					{
 						label: 'Time (in number of frames)',

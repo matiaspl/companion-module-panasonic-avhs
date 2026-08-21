@@ -117,6 +117,8 @@ module.exports = {
 
 		if (self.config.model == 'HS410' || self.config.model == 'HS450') {
 			const runningStates = self.ATST_RUNNING_STATES || ['02', '04', '06']
+			const atstTargets =
+				self[self.config.model + '_ATST_TARGETS'] || self.HS450_ATST_TARGETS
 
 			feedbacks.atly_tally = {
 				type: 'boolean',
@@ -169,7 +171,7 @@ module.exports = {
 						label: 'Target',
 						type: 'dropdown',
 						id: 'target',
-						choices: self.ATST_TARGETS,
+						choices: atstTargets,
 						default: '0',
 					},
 					{
@@ -217,7 +219,7 @@ module.exports = {
 						label: 'Target',
 						type: 'dropdown',
 						id: 'target',
-						choices: self.ATST_TARGETS,
+						choices: atstTargets,
 						default: '0',
 					},
 				],
@@ -241,7 +243,7 @@ module.exports = {
 						label: 'Target',
 						type: 'dropdown',
 						id: 'target',
-						choices: self.ATST_TARGETS,
+						choices: atstTargets,
 						default: '1',
 					},
 				],

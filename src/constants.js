@@ -254,6 +254,7 @@ module.exports = {
 		{ id: '08', label: 'DSK 2' },
 	],
 	
+	// HS410_IF (TCP 60040): 3-field SAUT; DSK is target 07.
 	HS410_TARGETS: [
 		{ id: '00', label: 'BKGD' },
 		{ id: '01', label: 'KEY' },
@@ -261,6 +262,18 @@ module.exports = {
 		{ id: '05', label: 'PinP 2' },
 		{ id: '06', label: 'FTB' },
 		{ id: '07', label: 'DSK' },
+	],
+
+	// AUXP_IP Vol.2 SAUT (TCP 60020, 2 fields). Official table:
+	// 00=BKGD, 01=KEY, 02=DSK, 03=-, 04=PinP1, 05=PinP2, 06=FTB.
+	// Used when HS410 multicast/AUXP_IP is enabled (same port as HS450).
+	HS410_AUXP_TARGETS: [
+		{ id: '00', label: 'BKGD' },
+		{ id: '01', label: 'KEY' },
+		{ id: '02', label: 'DSK' },
+		{ id: '04', label: 'PinP 1' },
+		{ id: '05', label: 'PinP 2' },
+		{ id: '06', label: 'FTB' },
 	],
 
 	// AV-HS450 uses AUXP_IP on TCP 60020 (not HS410_IF on 60040). AUXP_IP
@@ -300,9 +313,9 @@ module.exports = {
 	// States that mean an auto transition is in progress (not steady on/off).
 	ATST_RUNNING_STATES: ['02', '04', '06'],
 
-	// ATST parameter-1 targets. HS450 uses SAUT ids on the wire (0=BKGD … 6=FTB,
-	// 7=AUX); 8/9 are PinP buses on the HS410 AUXP_IP table.
-	ATST_TARGETS: [
+	// HS450 ATST targets match SAUT ids (confirmed live). No PinP1Bus/PinP2Bus
+	// slots — those are HS410 AUXP_IP panel-mode ids 8/9.
+	HS450_ATST_TARGETS: [
 		{ id: '0', label: 'BKGD' },
 		{ id: '1', label: 'KEY' },
 		{ id: '2', label: 'DSK 1' },
@@ -311,10 +324,17 @@ module.exports = {
 		{ id: '5', label: 'PinP 2' },
 		{ id: '6', label: 'FTB' },
 		{ id: '7', label: 'AUX' },
+	],
+
+	// HS410 AUXP_IP ATST table: 2–6 unused; PinP status is 8/9 (…Bus), not 4/5.
+	HS410_ATST_TARGETS: [
+		{ id: '0', label: 'BKGD' },
+		{ id: '1', label: 'KEY' },
+		{ id: '7', label: 'AUX' },
 		{ id: '8', label: 'PinP 1 Bus' },
 		{ id: '9', label: 'PinP 2 Bus' },
 	],
-	
+
 	HS50_TARGETS: [
 		{ id: '00', label: 'BKGD' },
 		{ id: '01', label: 'KEY' },
